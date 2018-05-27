@@ -1,6 +1,11 @@
 /*
   TODO
-      read file and append data to it  -- LAST THING
+
+      MINOR STUFF
+
+      acceptable_date function
+      menu
+      fix display stuff
 */
 
 #include <stdio.h>
@@ -19,9 +24,10 @@ typedef struct _Node{
 
 bool acceptable_date(char *date){
 
-  /*TODO
-          function that checks if a date is given in the correct order
-          in global date time syntax
+  /*
+
+    function that sees if a date is in correct date/time format
+
   */
 
   return true;
@@ -62,6 +68,7 @@ void free_list(Node *list){
   else  free(list);
 }
 
+
 Node *add_event(Node *list){
   char *message_ = malloc(MAX_NAME_SZ);
     if(message_ == NULL){
@@ -99,6 +106,68 @@ Node *add_event(Node *list){
   return list;
 }
 
+Node *read_file(){
+
+  FILE *fp;
+  char *path = (char*) malloc(sizeof(char)*256);
+  char *str = (char*) malloc(sizeof(char)*300);
+  Node *ptr;
+  char date[10];
+  char title[56];
+  char message[256];
+  char *DATE = (char*) malloc(sizeof(char)*strlen(date));
+  char *TITLE = (char*) malloc(sizeof(char)*strlen(title));
+  char *MESSAGE = (char*) malloc(sizeof(char)*strlen(message));
+
+  ptr = NULL;
+  printf("Enter file's path: ");
+  scanf(" %[^\n]s", path);
+
+  if((fp = fopen(path, "r")) == NULL){
+    printf("Error - File doesn't exist");
+    return NULL;
+  }
+
+  int count = 0;
+  while (fscanf(fp, "%s", str)!=EOF){
+    count++;
+        
+    switch (count){
+      case 1:
+        strcpy(date, str);
+        break;
+      case 2:
+        strcpy(title, str);
+        break;
+      case 3:
+        strcpy(message, str);
+        break;
+    }
+
+    if(count == 3){
+      DATE = realloc(DATE, 10);
+      TITLE = realloc(TITLE, 56);
+      MESSAGE = realloc(MESSAGE, 256);
+
+      strcpy(DATE,date);
+      strcpy(TITLE,title);
+      strcpy(MESSAGE,message);
+
+      ptr = add_list(ptr, DATE, TITLE, MESSAGE);
+      count = 0;
+    }
+  }
+  fclose(fp);
+  fp = fopen(path, "w");
+  printf("done reading...\n");
+  print_list(ptr);
+
+  fclose(fp);
+
+  return ptr;
+}
+
+
 void saving_results(Node *list){
 
   FILE *fp;
@@ -112,7 +181,7 @@ void saving_results(Node *list){
   scanf(" %[^\n]s", path);
   printf("Are you sure in opening this path -> \"%s\" ? [Y/N]: ", path);
   scanf(" %c", &choice);
-  while(choice != 'Y' || choice != 'y'){
+  if(choice == 'n'){
     path = realloc(path, 256);
     printf("Enter file path, please: ");
     scanf(" %s", path);
@@ -126,7 +195,7 @@ void saving_results(Node *list){
 
   Node *ptr = NULL;
   for(ptr = list; ptr != NULL; ptr = (*ptr).next){
-    fprintf(fp, "%s\t\t| %s\t\t| %s\t\t|\n", ptr->DATE, ptr->TITLE, ptr->MESSAGE);
+    fprintf(fp, "%s\t\t %s\t\t %s\t\t\n", ptr->DATE, ptr->TITLE, ptr->MESSAGE);
   }
 
   printf("File saved...\nFreeing memory...\nClosing...\n");
@@ -135,21 +204,28 @@ void saving_results(Node *list){
 
 int main(int argc, char **argv){
 
-  printf("adding new stuff\n");
+ printf("adding new stuff\n");
   Node *ptr;
   char choice = '\0';
 
   ptr = NULL;
 
-  printf("do you want to add an event? [Y/N]: ");
+  printf("Do you want to read an existing file? [Y/N]: ");
+  scanf(" %c", &choice);
+  if(choice == 'Y' || choice == 'y'){
+    printf("Reading file...\n");
+    ptr = read_file();
+  }
+
+  printf("\nDo you want to add an event? [Y/N]: ");
   scanf(" %c", &choice);
   while(choice == 'Y' || choice == 'y'){
     ptr = add_event(ptr);
-    printf("Do you want to add a new event? [Y/N]: ");
+    printf("\nDo you want to add a new event? [Y/N]: ");
     scanf(" %c", &choice);
   }
 
-  printf("Do you want to save the result? [Y/N]: ");
+  printf("\nDo you want to save the result? [Y/N]: ");
   scanf(" %c", &choice);
   if(choice == 'Y' || choice == 'y'){
     saving_results(ptr);
