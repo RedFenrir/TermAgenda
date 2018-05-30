@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
 
 typedef struct _Option{
   char* name;
@@ -85,6 +86,32 @@ void print_list(Node *ptr){
   }
 }
 
+int find_max(Node *list, int value){
+  if(list->next == NULL){
+    if(list->opt->id >= value)
+      return list->opt->id;
+    else  return value;
+  }
+
+  if(list->opt->id >= value)
+    value = list->opt->id;
+
+  return find_max(list->next, value);
+}
+
+int find_min(Node *list, int value){
+  if(list->next == NULL){
+    if(list->opt->id <= value)
+      return list->opt->id;
+    else  return value;
+  }
+
+  if(list->opt->id <= value)
+    value = list->opt->id;
+
+  return find_min(list->next, value);
+}
+
 
 int handle_list(Node *ptr){
 
@@ -96,12 +123,14 @@ int handle_list(Node *ptr){
     printf("[j] - Ordered\n\n");
 
   Node *p;
+  Node *curr;
   int counter = 0;
   int id_counter = 0;
   int h_top = 0;
-  int returning = 0;
   int current_value = 0;
   char c = '\0';
+  bool flag = false;
+  bool pressed = false;
 
   for(p = ptr; p != NULL; p = p->next)
     if(p->next == NULL)
@@ -109,36 +138,63 @@ int handle_list(Node *ptr){
 
   Option *h = NULL;
 
-  for(p = ptr; p != NULL; p = p->next)
-    printf("%s\n", p->opt->name);
-  printf("\n");
-
   h = define_option("exit", h_top-1);
   ptr = bottom(ptr, h);
 
-  print_list(ptr);
-
   do{
+    system("clear");
+    if(flag == true){
+      printf("[j] - Invalid Enter\n");
+      flag = false;
+    }
+
     printf("MENU\n\n---------------------------\n\n");
     for(p = ptr; p != NULL; p = p->next){
       if(p->opt->id == current_value){
         printf("[*] %s [*]\n", p->opt->name);
         p->opt->pressed = true;
+        curr = p;
       }
       else
         printf("    %s\n", p->opt->name);
     }
-    system ("/bin/stty raw");
-    while((c=getchar())!= '.') {
-      /* type a period to break out of the loop, since CTRL-D won't work raw */
-      putchar(c);
+    printf(">");
+    scanf(" %c", &c);
+    if( c == 's'){
+      curr->opt->pressed = false;
+      if(current_value-1 >= (find_min(ptr, 0))){
+        printf("[j] - ok, you can go up\n");
+        current_value--;
+      }
     }
-    /* use system call to set terminal behaviour to more normal behaviour */
-    system ("/bin/stty cooked");
-    returning = current_value;
-  }while(c == 13);
 
-  return returning;;
+    else if(c == 'w'){
+      curr->opt->pressed = false;
+      if(current_value+1 <= find_max(ptr, 0)){
+        printf("[j] - ok, you can go down\n");
+        current_value++;
+      }
+    }
+
+    else if(c == 'k')
+      pressed = true;
+
+    else  flag = true;
+  }while(pressed != true);
+
+
+//TODO this is for input without enter
+/*
+  system ("/bin/stty raw");
+  while((c=getchar())!= '.') {
+    // type a period to break out of the loop, since CTRL-D won't work raw
+    putchar(c);
+  }
+  // use system call to set terminal behaviour to more normal behaviour
+  system ("/bin/stty cooked");
+  }while(c == 13);
+*/
+  return current_value;
 }
 
 
@@ -161,6 +217,7 @@ int main(int argc, char **argv){
   ptr = add_list(ptr, h3);
 
   int h = handle_list(ptr);
+  printf("%d", h);
 
   return 0;
 }
