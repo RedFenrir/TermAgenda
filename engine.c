@@ -4,7 +4,6 @@
       MINOR STUFF
 
       acceptable_date function
-      menu
       fix display stuff
 */
 
