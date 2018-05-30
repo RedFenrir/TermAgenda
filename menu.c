@@ -1,3 +1,8 @@
+/*
+  
+  This is only an example on how to use the library
+  
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
