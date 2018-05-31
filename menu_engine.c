@@ -1,9 +1,19 @@
-#include "stdmenu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+
+typedef struct _Option{
+  char* name;
+  int id;
+  bool pressed;
+}Option;
+
+typedef struct _Nodel{
+  Option *opt;
+  struct _Nodel *next;
+}Nodel;
 
 int counting_Nodels(Nodel *list){
   if(list == NULL)
@@ -112,14 +122,13 @@ int handle_list(Nodel *ptr){
   bool pressed = false;
 
   for(p = ptr; p != NULL; p = p->next)
-    if(p->next == NULL && p->opt->id == 1){
+    if(p->next == NULL)
       h_top = p->opt->id;
 
-      Option *h = NULL;
+  Option *h = NULL;
 
-      h = define_option("exit", h_top-1);
-      ptr = bottom(ptr, h);
-    }
+  h = define_option("exit", h_top-1);
+  ptr = bottom(ptr, h);
 
   do{
     system("clear");
@@ -175,4 +184,32 @@ int handle_list(Nodel *ptr){
   }while(c == 13);
 */
   return current_value;
+}
+
+int main(int argc, char **argv){
+
+  Option *h1, *h2, *h3, *h4;
+  Nodel *list;
+  h1 = NULL;
+  h2 = NULL;
+  h3 = NULL;
+  h4 = NULL;
+  list = NULL;
+
+  h1 = define_option("Read a file", 4);
+  h2 = define_option("Print Agenda", 3);
+  h3 = define_option("Save a file", 2);
+  h4 = define_option("Add an event", 1);
+
+  list = add(list, h4);
+  list = add(list, h3);
+  list = add(list, h2);
+  list = add(list, h1);
+
+  int h = 1000;
+
+  h = handle_list(list);
+  system("clear");
+  printf("%d", h);
+  return 0;
 }

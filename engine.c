@@ -198,7 +198,7 @@ void saving_results(Node *list){
     fprintf(fp, "%s\t\t %s\t\t %s\t\t\n", ptr->DATE, ptr->TITLE, ptr->MESSAGE);
   }
 
-  printf("File saved...\nFreeing memory...\nClosing...\n");
+  printf("File saved...\nFreeing memory...\nClosing file...\n");
 
 }
 
@@ -228,9 +228,10 @@ int main(int argc, char **argv){
   list = add(list, h2);
   list = add(list, h1);
 
-  int h = 1000;
+  int h = 0;
 
-  while(h = handle_list(list) == 0){
+  h = handle_list(list);
+  while(h != 0){
 
     if(h == 4){
       printf("Reading file...\n");
@@ -247,14 +248,18 @@ int main(int argc, char **argv){
     }
 
     if(h == 1){
-      while(choice == 'Y' || choice == 'y'){
+      do{
         ptr = add_event(ptr);
         printf("\nDo you want to add a new event? [Y/N]: ");
         scanf(" %c", &choice);
-      }
+      }while(choice == 'Y' || choice == 'y');
     }
 
+    printf("\nPress any key to continue...\n");
+    scanf(" %c", &choice);
+    h = handle_list(list);
   }
+
 
   free_list(ptr);
 
