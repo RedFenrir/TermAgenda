@@ -1,17 +1,9 @@
-/*
-  TODO
-
-      MINOR STUFF
-
-      acceptable_date function
-      fix display stuff
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include "stdmenu.h"
+#include "stddate.h"
 
 #define MAX_NAME_SZ 256
 
@@ -21,18 +13,6 @@ typedef struct _Node{
   char* DATE;
   struct _Node *next;
 }Node;
-
-bool acceptable_date(char *date){
-
-  /*
-
-    function that sees if a date is in correct date/time format
-
-  */
-
-  return true;
-
-}
 
 void print_list(Node *list){
   printf("DATE\t\t| TITLE\t\t| MESSAGE\t\t|\n");
@@ -82,8 +62,10 @@ Node *add_event(Node *list){
       }
   char date[11];
 
-  printf("Date: ");
-  scanf(" %s", &date);
+  do{
+    printf("Date: ");
+    scanf(" %s", &date);
+  }while(acceptable_date(date) != true);
 
   printf("Title: ");
   scanf(" %[^\n]s", title_);
