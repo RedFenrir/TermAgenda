@@ -3,9 +3,9 @@
 
 A simple C command line agenda..</br>
 just my first project on git
-</br></br>
+</br></br></br></br>
 
-Journaling:
+<h3>Journaling:</h6></br>
 Minor bugs solved... OK</br>
 Implementation of menu scrolling...</br>
 Colouring</br>
