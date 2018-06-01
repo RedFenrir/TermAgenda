@@ -164,17 +164,19 @@ void saving_results(Node *list){
   printf("Are you sure in opening this path -> \"%s\" ? [Y/N]: ", path);
   scanf(" %c", &choice);
   if(choice == 'n'){
-    path = realloc(path, 256);
+    free(path);
+    path = (char*) malloc(sizeof(char)*256);
     printf("Enter file path, please: ");
-    scanf(" %s", path);
-    printf("Opening \"%s\" this path, right? [Y/N]: ");
+    scanf(" %[^\n]s", path);
+    printf("Opening \"%s\" this path, right? [Y/N]: ", path);
     scanf(" %c", &choice);
   }
 
   if((fp = fopen(path, "a")) == NULL){
-    printf("ERROR - File doesn't exist");
+    printf("File doesn't exist - creating new file");
   }
 
+  fp = fopen(path, "a");
   Node *ptr = NULL;
   for(ptr = list; ptr != NULL; ptr = (*ptr).next){
     fprintf(fp, "%s\t\t %s\t\t %s\t\t\n", ptr->DATE, ptr->TITLE, ptr->MESSAGE);
@@ -243,7 +245,8 @@ int main(int argc, char **argv){
   }
 
 
-  free_list(ptr);
+  if(ptr != NULL)
+    free_list(ptr);
 
   return 0;
 }
